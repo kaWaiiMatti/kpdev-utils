@@ -19,7 +19,7 @@ RUN apt-get update && \
     echo "Signed-by: /etc/apt/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/azure-cli.sources && \
     # install
     apt-get update && \
-    apt-get install -y azure-cli postgresql-client && \
+    apt-get install -y apache2-utils azure-cli postgresql-client && \
     # cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
