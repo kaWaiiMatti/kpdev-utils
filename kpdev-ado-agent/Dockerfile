@@ -4,12 +4,24 @@ FROM ubuntu:24.04
 ENV TARGETARCH="linux-arm64"
 # Also can be "linux-arm", "linux-arm64".
 
-RUN apt update && \
-    apt upgrade -y && \
-    apt install -y curl git jq libicu74
-
-# Install Azure CLI
-RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+RUN apt-get update && \
+    apt-get upgrade -y && \
+    apt-get install -y apt-transport-https ca-certificates curl gnupg lsb-release && \
+    # Prepare Azure CLI repository
+    mkdir -p /etc/apt/keyrings && \
+    curl -fsLS https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/keyrings/microsoft.gpg && \
+    AZ_DIST=$(lsb_release -cs) && \
+    echo "Types: deb" > /etc/apt/sources.list.d/azure-cli.sources && \
+    echo "URIs: https://packages.microsoft.com/repos/azure-cli/" >> /etc/apt/sources.list.d/azure-cli.sources && \
+    echo "Suites: ${AZ_DIST}" >> /etc/apt/sources.list.d/azure-cli.sources && \
+    echo "Components: main" >> /etc/apt/sources.list.d/azure-cli.sources && \
+    echo "Architectures: $(dpkg --print-architecture)" >> /etc/apt/sources.list.d/azure-cli.sources && \
+    echo "Signed-by: /etc/apt/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/azure-cli.sources && \
+    # Install applications
+    apt-get update && \
+    apt-get install -y azure-cli && \
+    # Cleanup
+    apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /azp/
 
