@@ -32,6 +32,9 @@ RUN chmod +x ./start.sh
 RUN useradd -m -d /home/agent agent
 RUN chown -R agent:agent /azp /home/agent
 
+# Set the DOCKER_HOST environment variable to point to the Podman socket for the agent user
+ENV DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+
 USER agent
 # Another option is to run the agent as root.
 # ENV AGENT_ALLOW_RUNASROOT="true"
