@@ -2,6 +2,21 @@
 
 # Source: https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux
 
+# Running podman inside a container requires a few extra steps.
+export XDG_RUNTIME_DIR=/tmp/agent-runtime
+mkdir -p "$XDG_RUNTIME_DIR"
+chmod 700 "$XDG_RUNTIME_DIR"
+
+podman system service --time=0 "$DOCKER_HOST" &
+
+# Verify podman works and fail fast if not
+unshare --user --map-root-user true
+podman info
+podman run --rm docker.io/library/alpine:3.20 true
+curl --fail --unix-socket "${DOCKER_HOST#unix://}" http://localhost/_ping
+
+# end of podman setup
+
 set -e
 
 if [ -z "${AZP_URL}" ]; then

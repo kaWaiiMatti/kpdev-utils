@@ -19,7 +19,11 @@ RUN apt-get update && \
     echo "Signed-by: /etc/apt/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/azure-cli.sources && \
     # Install applications
     apt-get update && \
-    apt-get install -y azure-cli dotnet-sdk-10.0 git jq libicu74 podman && \
+    apt-get install -y azure-cli dotnet-sdk-10.0 git jq libicu74 \
+    # Podman and dependencies for running Docker commands in the agent container
+    podman uidmap slirp4netns fuse-overlayfs && \
+    useradd -m -u 1000 -d /home/agent agent && \
+    usermod --add-subuids 100000-165535 --add-subgids 100000-165535 agent && \
     # Cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -33,7 +37,8 @@ RUN useradd -m -d /home/agent agent
 RUN chown -R agent:agent /azp /home/agent
 
 # Set the DOCKER_HOST environment variable to point to the Podman socket for the agent user
-ENV DOCKER_HOST=unix:///run/user/1000/podman/podman.sock
+ENV XDG_RUNTIME_DIR=/tmp/agent-runtime
+ENV DOCKER_HOST=unix:///tmp/agent-runtime/podman/podman.sock
 
 USER agent
 # Another option is to run the agent as root.
