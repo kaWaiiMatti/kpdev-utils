@@ -50,8 +50,11 @@ if [ -z "${AZP_TOKEN_FILE}" ]; then
   fi
 
   AZP_TOKEN_FILE="/azp/.token"
+  echo "Writing token to ${AZP_TOKEN_FILE}"
   echo -n "${AZP_TOKEN}" > "${AZP_TOKEN_FILE}"
 fi
+
+echo "Unsetting stuff"
 
 unset AZP_FEDERATED_TOKEN
 unset AZP_TOKEN
