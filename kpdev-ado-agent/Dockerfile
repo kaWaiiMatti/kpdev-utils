@@ -19,9 +19,9 @@ RUN apt-get update && \
     echo "Signed-by: /etc/apt/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/azure-cli.sources && \
     # Install applications
     apt-get update && \
-    apt-get install -y azure-cli dotnet-sdk-10.0 git jq libicu74 \
+    apt-get install -y azure-cli dotnet-sdk-10.0 git jq libicu74 && \
     # Podman and dependencies for running Docker commands in the agent container
-    podman uidmap slirp4netns fuse-overlayfs && \
+    apt-get install -y podman uidmap slirp4netns fuse-overlayfs && \
     useradd -m -u 1000 -d /home/agent agent && \
     usermod --add-subuids 100000-165535 --add-subgids 100000-165535 agent && \
     # Cleanup
