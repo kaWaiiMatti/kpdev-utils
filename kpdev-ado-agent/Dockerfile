@@ -22,8 +22,6 @@ RUN apt-get update && \
     apt-get install -y azure-cli dotnet-sdk-10.0 git jq libicu74 && \
     # Podman and dependencies for running Docker commands in the agent container
     apt-get install -y podman uidmap slirp4netns fuse-overlayfs && \
-    # useradd -m -u 1000 -d /home/agent agent && \
-    # usermod --add-subuids 100000-165535 --add-subgids 100000-165535 agent && \
     # Cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
@@ -33,8 +31,11 @@ COPY ./start.sh ./
 RUN chmod +x ./start.sh
 
 # Create agent user and set up home directory
-RUN useradd -m -d /home/agent agent
+RUN useradd -m -u 1000 -d /home/agent agent
 RUN chown -R agent:agent /azp /home/agent
+
+# Set up subuid and subgid ranges for the agent user to allow Podman to run containers as non-root
+RUN usermod --add-subuids 100000-165535 --add-subgids 100000-165535 agent
 
 # Set the DOCKER_HOST environment variable to point to the Podman socket for the agent user
 ENV XDG_RUNTIME_DIR=/tmp/agent-runtime
