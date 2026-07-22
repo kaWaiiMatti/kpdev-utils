@@ -22,8 +22,8 @@ RUN apt-get update && \
     apt-get install -y azure-cli dotnet-sdk-10.0 git jq libicu74 && \
     # Podman and dependencies for running Docker commands in the agent container
     apt-get install -y podman uidmap slirp4netns fuse-overlayfs && \
-    useradd -m -u 1000 -d /home/agent agent && \
-    usermod --add-subuids 100000-165535 --add-subgids 100000-165535 agent && \
+    # useradd -m -u 1000 -d /home/agent agent && \
+    # usermod --add-subuids 100000-165535 --add-subgids 100000-165535 agent && \
     # Cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
