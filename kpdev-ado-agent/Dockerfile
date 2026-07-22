@@ -30,6 +30,9 @@ WORKDIR /azp/
 COPY ./start.sh ./
 RUN chmod +x ./start.sh
 
+# Delete default ubuntu user to avoid user id collision
+RUN deluser --remove-home ubuntu
+
 # Create agent user and set up home directory
 RUN useradd -m -u 1000 -d /home/agent agent
 RUN chown -R agent:agent /azp /home/agent
