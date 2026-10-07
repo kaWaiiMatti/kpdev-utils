@@ -36,7 +36,17 @@ RUN deluser --remove-home ubuntu
 RUN useradd -m -u 1000 -d /home/agent agent
 RUN chown -R agent:agent /azp /home/agent
 
+# Set up PostgreSQL data directory and socket directory
+ENV PGDATA=/var/lib/postgresql/data
+ENV PGSOCKET=/var/run/postgresql
+ENV PATH=/usr/lib/postgresql/18/bin:$PATH
+
+RUN mkdir -p "$PGSOCKET"
+RUN install -d -o agent -g agent -m 0700 "$PGDATA" "$PGSOCKET"
+
+# Set the user to run the agent
 USER agent
+
 # Another option is to run the agent as root.
 # ENV AGENT_ALLOW_RUNASROOT="true"
 

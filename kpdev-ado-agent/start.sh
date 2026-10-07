@@ -2,6 +2,10 @@
 
 # Source: https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux
 
+# Start PostgreSQL service under the current user
+initdb -D "$PGDATA" -U agent --auth-local=peer
+pg_ctl -D "$PGDATA" -l logfile start
+
 set -e
 
 if [ -z "${AZP_URL}" ]; then
