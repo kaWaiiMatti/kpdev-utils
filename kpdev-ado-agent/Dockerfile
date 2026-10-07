@@ -1,6 +1,6 @@
 # Source: https://learn.microsoft.com/en-us/azure/devops/pipelines/agents/docker?view=azure-devops#linux
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 ENV TARGETARCH="linux-arm64"
 # Also can be "linux-arm", "linux-arm64".
 
@@ -19,7 +19,8 @@ RUN apt-get update && \
     echo "Signed-by: /etc/apt/keyrings/microsoft.gpg" >> /etc/apt/sources.list.d/azure-cli.sources && \
     # Install applications
     apt-get update && \
-    apt-get install -y azure-cli dotnet-sdk-10.0 git jq libicu74 && \
+    apt-get install -y azure-cli dotnet-sdk-10.0 git jq && \
+    apt-get install -y postgresql-18 && \
     # Cleanup
     apt-get clean && rm -rf /var/lib/apt/lists/*
 
