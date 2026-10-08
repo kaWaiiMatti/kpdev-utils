@@ -61,6 +61,22 @@ cleanup() {
     # If the agent has some running jobs, the configuration removal process will fail.
     # So, give it some time to finish the job.
     while true; do
+      echo "Reading federated token from file"
+      AZP_FEDERATED_TOKEN=$(cat "$AZP_FEDERATED_TOKEN_FILE")
+      echo "Federated token read from file"
+
+      echo "Using service principal credentials to get token"
+      az login --allow-no-subscriptions --service-principal --username "$AZP_CLIENT_ID" --federated-token "$AZP_FEDERATED_TOKEN" --tenant "$AZP_TENANT_ID"
+      # adapted from https://learn.microsoft.com/en-us/azure/databricks/dev-tools/user-aad-token
+      AZP_TOKEN=$(az account get-access-token --query accessToken --output tsv)
+      echo "Token retrieved"
+
+      echo "Writing token to ${AZP_TOKEN_FILE}"
+      echo -n "${AZP_TOKEN}" > "${AZP_TOKEN_FILE}"
+
+      unset AZP_FEDERATED_TOKEN
+      unset AZP_TOKEN
+
       ./config.sh remove --unattended --auth "PAT" --token $(cat "${AZP_TOKEN_FILE}") && break
 
       echo "Retrying in 30 seconds..."
